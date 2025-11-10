@@ -1,0 +1,37 @@
+name: PR Workflow
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+      - release-*
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run unit tests
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+      - name: Publish test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/TestResults/*.trx'
