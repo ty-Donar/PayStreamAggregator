@@ -1,6 +1,6 @@
 namespace PayStreamAggregator;
 
-public class Worker : IHostedService
+public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
 
@@ -9,23 +9,19 @@ public class Worker : IHostedService
         _logger = logger;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("Worker starting at: {time}", DateTimeOffset.Now);
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            _logger.LogInformation("Worker is alive at: {time}", DateTimeOffset.Now);
+        _logger.LogInformation("Worker starting at: {time}", DateTimeOffset.UtcNow);
 
-            // Safe async delay (non-blocking)
-            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            // This is a heartbeat / placeholder for Kafka consumption
+            _logger.LogInformation("Worker heartbeat at: {time}", DateTimeOffset.UtcNow);
+
+            // Wait 5 seconds between heartbeats
+            await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
         }
 
-        _logger.LogInformation("Worker stopped at: {time}", DateTimeOffset.Now);
-    }
-
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("Worker stopping at: {time}", DateTimeOffset.Now);
-        return Task.CompletedTask;
+        _logger.LogInformation("Worker stopping at: {time}", DateTimeOffset.UtcNow);
     }
 }

@@ -4,6 +4,7 @@
     "PayStreamAggregator": {
       "commandName": "Project",
       "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:7900;https://localhost:7901",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       }
